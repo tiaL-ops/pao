@@ -1,97 +1,246 @@
-html,body{
-  height:100%;
-  margin:0;
-  background:#000;
-  color:#fff;
-  font-family:system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-}
-.camera-app{
-  display:flex;
-  flex-direction:column;
-  height:100vh;
-  align-items:center;
-  justify-content:space-between;
-}
-.viewport{
-  position:relative;
-  width:100%;
-  height:calc(100vh - 120px);
-  background:#111;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-}
-video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-.overlay{position:absolute;top:12px;right:12px}
-.control{
-  background:rgba(0,0,0,0.4);
-  border:1px solid rgba(255,255,255,0.5);
-  color:#fff;
-  padding:8px 10px;
-  border-radius:8px;
-  cursor:pointer;
-}
-.control.small{padding:6px 8px;font-size:13px}
-.controls{display:flex;gap:12px;padding:12px;justify-content:center}
-.big{
-  font-size:18px;
-  padding:12px 24px;
-  border-radius:999px;
-  background:#fff;
-  color:#000;
-  border:none;
-  cursor:pointer;
+/* ── Mipozy · Kawaii Beige Theme ────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+:root {
+  --bg:          #f5ece0;          /* warm linen */
+  --bg-check:    #e8d9c8;          /* checkerboard square */
+  --surface:     #fdf6ee;          /* card surface */
+  --surface-2:   #ecddc9;          /* slightly darker surface */
+  --brown:       #b07d5a;          /* warm brown accent */
+  --brown-dark:  #7a5440;          /* deep brown */
+  --pink:        #e8918a;          /* soft coral pink */
+  --pink-light:  #f7d5d0;
+  --text:        #5c3d2e;          /* warm dark brown text */
+  --text-muted:  #a07a65;
+  --radius-card: 28px;
+  --radius-btn:  999px;
+  --shadow:      0 4px 20px rgba(120,80,50,.13);
+  --shadow-sm:   0 2px 8px  rgba(120,80,50,.10);
 }
 
-/* Reference image overlay */
-.ref-overlay{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  pointer-events:none;
-  user-select:none;
+/* ── Reset & Base ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  /* subtle checkerboard like the phone wallpaper */
+  background-image:
+    repeating-conic-gradient(var(--bg-check) 0% 25%, transparent 0% 50%);
+  background-size: 40px 40px;
+  color: var(--text);
+  font-family: 'Nunito', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Reference controls bar */
-.ref-controls{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:8px;
-  padding:8px 12px 14px;
-  width:100%;
-  box-sizing:border-box;
-}
-.ref-upload-btn{
-  display:inline-block;
-  background:rgba(255,255,255,0.12);
-  border:1px dashed rgba(255,255,255,0.5);
-  color:#fff;
-  padding:9px 18px;
-  border-radius:8px;
-  cursor:pointer;
-  font-size:14px;
-}
-.opacity-row{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  width:100%;
-  max-width:340px;
-}
-.opacity-row input[type=range]{
-  flex:1;
-  accent-color:#fff;
-  height:4px;
+/* ── App Shell ────────────────────────────────────────────── */
+.camera-app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 0;
 }
 
-@media(min-width:700px){
-  .viewport{height:60vh;width:600px;border-radius:12px;overflow:hidden}
+/* ── Viewport / Viewfinder ────────────────────────────────── */
+.viewport {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  height: calc(100vh - 200px);
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  border: 3px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: calc(var(--radius-card) - 3px);
+}
+
+/* flip button */
+.overlay { position: absolute; top: 14px; right: 14px; }
+
+.btn-icon {
+  background: rgba(253,246,238,.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 2px solid #fff;
+  color: var(--brown-dark);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn-icon:hover  { transform: scale(1.06); box-shadow: var(--shadow); }
+.btn-icon:active { transform: scale(.96); }
+
+/* ref overlay */
+.ref-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Bottom Bar ───────────────────────────────────────────── */
+.bottom-bar {
+  width: 100%;
+  max-width: 500px;
+  background: var(--surface);
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  padding: 18px 20px 30px;
+  box-shadow: 0 -4px 24px rgba(120,80,50,.10);
+  border-top: 3px solid #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Controls ─────────────────────────────────────────────── */
+.controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* main capture button */
+.btn-capture {
+  background: var(--pink);
+  color: #fff;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  padding: 14px 32px;
+  border: none;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(232,145,138,.40);
+  transition: transform .15s ease, box-shadow .15s ease;
+  letter-spacing: .3px;
+}
+.btn-capture:hover  { transform: scale(1.05); box-shadow: 0 6px 20px rgba(232,145,138,.55); }
+.btn-capture:active { transform: scale(.97); }
+
+/* secondary button */
+.btn-secondary {
+  background: var(--surface-2);
+  color: var(--brown-dark);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 22px;
+  border: 2px solid #fff;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform .15s ease, background .15s ease;
+}
+.btn-secondary:hover  { background: var(--pink-light); transform: scale(1.04); }
+.btn-secondary:active { transform: scale(.96); }
+
+/* hidden download link styled if ever shown */
+#downloadLink {
+  display: inline-block;
+  background: var(--brown);
+  color: #fff;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: var(--radius-btn);
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  transition: transform .15s ease;
+}
+#downloadLink:hover { transform: scale(1.04); }
+
+/* ── Reference Controls ───────────────────────────────────── */
+.ref-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.btn-ref-upload {
+  display: inline-block;
+  background: var(--pink-light);
+  border: 2px dashed var(--pink);
+  color: var(--pink);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 22px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background .15s, transform .15s;
+}
+.btn-ref-upload:hover { background: #f5c5c0; transform: scale(1.03); }
+
+/* opacity row */
+.opacity-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 340px;
+  background: var(--surface-2);
+  padding: 10px 16px;
+  border-radius: 16px;
+  border: 2px solid #fff;
+}
+
+.opacity-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.opacity-row input[type=range] {
+  flex: 1;
+  accent-color: var(--pink);
+  height: 4px;
+  cursor: pointer;
+}
+
+/* ghost / remove button */
+.btn-ghost {
+  background: none;
+  border: 2px solid var(--brown);
+  color: var(--brown);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.btn-ghost:hover { background: var(--brown); color: #fff; }
+
+/* ── Desktop tweak ────────────────────────────────────────── */
+@media (min-width: 700px) {
+  .viewport {
+    height: 60vh;
+    width: 500px;
+  }
 }
