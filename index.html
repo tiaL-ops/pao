@@ -11,16 +11,30 @@
   <main class="camera-app">
     <div class="viewport">
       <video id="video" autoplay playsinline></video>
+      <!-- Reference image: visible in viewfinder, NOT captured -->
+      <img id="refImg" class="ref-overlay" hidden />
       <canvas id="canvas" hidden></canvas>
       <div class="overlay">
-        <button id="switchBtn" class="control">🔄</button>
+        <button id="switchBtn" class="control">Switcs</button>
       </div>
     </div>
 
     <div class="controls">
-      <button id="captureBtn" class="big">Take</button>
-      <button id="saveBtn">Save</button>
+      <button id="captureBtn" class="big">📷 Take</button>
+      <button id="saveBtn">💾 Re-save</button>
       <a id="downloadLink" hidden>Download</a>
+    </div>
+
+    <!-- Reference image controls -->
+    <div class="ref-controls" id="refControls">
+      <label class="ref-upload-btn" for="refUpload">🖼 Reference</label>
+      <input type="file" id="refUpload" accept="image/*" hidden />
+      <div class="opacity-row" id="opacityRow" hidden>
+        <span>👻</span>
+        <input type="range" id="opacitySlider" min="5" max="95" value="40" />
+        <span>🔍</span>
+        <button id="clearRef" class="control small">✕</button>
+      </div>
     </div>
   </main>
 

@@ -28,9 +28,70 @@ video{
   object-fit:cover;
 }
 .overlay{position:absolute;top:12px;right:12px}
-.control{background:rgba(0,0,0,0.4);border:1px solid #fff;color:#fff;padding:8px 10px;border-radius:8px}
-.controls{display:flex;gap:12px;padding:12px}
-.big{font-size:18px;padding:12px 20px;border-radius:999px;background:#fff;color:#000;border:none}
+.control{
+  background:rgba(0,0,0,0.4);
+  border:1px solid rgba(255,255,255,0.5);
+  color:#fff;
+  padding:8px 10px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.control.small{padding:6px 8px;font-size:13px}
+.controls{display:flex;gap:12px;padding:12px;justify-content:center}
+.big{
+  font-size:18px;
+  padding:12px 24px;
+  border-radius:999px;
+  background:#fff;
+  color:#000;
+  border:none;
+  cursor:pointer;
+}
+
+/* Reference image overlay */
+.ref-overlay{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  pointer-events:none;
+  user-select:none;
+}
+
+/* Reference controls bar */
+.ref-controls{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px 14px;
+  width:100%;
+  box-sizing:border-box;
+}
+.ref-upload-btn{
+  display:inline-block;
+  background:rgba(255,255,255,0.12);
+  border:1px dashed rgba(255,255,255,0.5);
+  color:#fff;
+  padding:9px 18px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:14px;
+}
+.opacity-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  width:100%;
+  max-width:340px;
+}
+.opacity-row input[type=range]{
+  flex:1;
+  accent-color:#fff;
+  height:4px;
+}
+
 @media(min-width:700px){
-  .viewport{height:70vh;width:600px;border-radius:12px;overflow:hidden}
+  .viewport{height:60vh;width:600px;border-radius:12px;overflow:hidden}
 }

@@ -2,6 +2,7 @@ let video = null;
 let canvas = null;
 let stream = null;
 let facingMode = 'environment';
+let refObjectUrl = null; // held separately so it's NEVER drawn to canvas
 
 async function startCamera() {
   video = document.getElementById('video');
@@ -66,6 +67,8 @@ async function saveBlob(blob) {
 
 async function onCaptureClick() {
   const blob = await takePhoto();
+  // auto-save immediately
+  await saveBlob(blob);
   // show a quick preview by replacing video with captured frame briefly
   const previewUrl = URL.createObjectURL(blob);
   const prevVideo = document.getElementById('video');
@@ -78,7 +81,7 @@ async function onCaptureClick() {
     prevVideo.play();
     URL.revokeObjectURL(previewUrl);
   }, 800);
-  // store last blob for save
+  // store last blob in case user wants to re-save
   window._lastCapture = blob;
 }
 
@@ -103,10 +106,43 @@ function registerSW() {
   }
 }
 
+function setupRefImage() {
+  const refUpload    = document.getElementById('refUpload');
+  const refImg       = document.getElementById('refImg');
+  const opacityRow   = document.getElementById('opacityRow');
+  const opacitySlider = document.getElementById('opacitySlider');
+  const clearRefBtn  = document.getElementById('clearRef');
+
+  refUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (refObjectUrl) URL.revokeObjectURL(refObjectUrl);
+    refObjectUrl = URL.createObjectURL(file);
+    refImg.src = refObjectUrl;
+    refImg.hidden = false;
+    refImg.style.opacity = opacitySlider.value / 100;
+    opacityRow.hidden = false;
+    // reset input so same file can be re-picked
+    e.target.value = '';
+  });
+
+  opacitySlider.addEventListener('input', () => {
+    refImg.style.opacity = opacitySlider.value / 100;
+  });
+
+  clearRefBtn.addEventListener('click', () => {
+    refImg.hidden = true;
+    refImg.src = '';
+    opacityRow.hidden = true;
+    if (refObjectUrl) { URL.revokeObjectURL(refObjectUrl); refObjectUrl = null; }
+  });
+}
+
 window.addEventListener('load', async () => {
   document.getElementById('captureBtn').addEventListener('click', onCaptureClick);
   document.getElementById('saveBtn').addEventListener('click', onSaveClick);
   document.getElementById('switchBtn').addEventListener('click', onSwitchClick);
+  setupRefImage();
   await startCamera();
   registerSW();
 });
