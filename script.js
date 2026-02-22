@@ -138,10 +138,31 @@ function setupRefImage() {
   });
 }
 
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBtn').hidden = false;
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  document.getElementById('installBtn').hidden = true;
+});
+
 window.addEventListener('load', async () => {
   document.getElementById('captureBtn').addEventListener('click', onCaptureClick);
   document.getElementById('saveBtn').addEventListener('click', onSaveClick);
   document.getElementById('switchBtn').addEventListener('click', onSwitchClick);
+  document.getElementById('installBtn').addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User ${outcome} the install prompt`);
+      deferredPrompt = null;
+    }
+  });
   setupRefImage();
   await startCamera();
   registerSW();

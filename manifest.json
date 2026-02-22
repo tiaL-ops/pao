@@ -1,6 +1,6 @@
 {
-  "name": "Mipozy Camera",
-  "short_name": "Mipozy",
+  "name": "pao",
+  "short_name": "pao",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#000000",
