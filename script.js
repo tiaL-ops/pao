@@ -40,9 +40,19 @@ function takePhoto() {
 }
 
 async function saveBlob(blob) {
-  const filename = `pao-${Date.now()}.jpg`;
-  
-  // Mobile: always download so it saves to device
+  const filename = `mipozy-${Date.now()}.jpg`;
+  // Try Web Share (files) first (good on mobile Android/modern browsers)
+  try {
+    const file = new File([blob], filename, { type: blob.type });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'Mipozy Photo' });
+      return;
+    }
+  } catch (e) {
+    // ignore and fallback to download
+  }
+
+  // Fallback: download via anchor
   const url = URL.createObjectURL(blob);
   const a = document.getElementById('downloadLink');
   a.href = url;
@@ -52,7 +62,7 @@ async function saveBlob(blob) {
   setTimeout(() => {
     URL.revokeObjectURL(url);
     a.hidden = true;
-  }, 100);
+  }, 1000);
 }
 
 async function onCaptureClick() {
@@ -128,38 +138,10 @@ function setupRefImage() {
   });
 }
 
-let deferredPrompt = null;
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-});
-
-window.addEventListener('appinstalled', () => {
-  deferredPrompt = null;
-  const btn = document.getElementById('installBtn');
-  if (btn) btn.style.display = 'none';
-});
-
 window.addEventListener('load', async () => {
   document.getElementById('captureBtn').addEventListener('click', onCaptureClick);
   document.getElementById('saveBtn').addEventListener('click', onSaveClick);
   document.getElementById('switchBtn').addEventListener('click', onSwitchClick);
-  document.getElementById('installBtn').addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`User ${outcome} the install prompt`);
-      deferredPrompt = null;
-    } else {
-      // On iOS or if already installed, show instructions
-      if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
-        alert('Tap the Share button (square with arrow) and select "Add to Home Screen"');
-      } else {
-        alert('Open browser menu and look for "Install app" or "Add to Home Screen"');
-      }
-    }
-  });
   setupRefImage();
   await startCamera();
   registerSW();
