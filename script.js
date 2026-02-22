@@ -40,19 +40,9 @@ function takePhoto() {
 }
 
 async function saveBlob(blob) {
-  const filename = `mipozy-${Date.now()}.jpg`;
-  // Try Web Share (files) first (good on mobile Android/modern browsers)
-  try {
-    const file = new File([blob], filename, { type: blob.type });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file], title: 'Mipozy Photo' });
-      return;
-    }
-  } catch (e) {
-    // ignore and fallback to download
-  }
-
-  // Fallback: download via anchor
+  const filename = `pao-${Date.now()}.jpg`;
+  
+  // Mobile: always download so it saves to device
   const url = URL.createObjectURL(blob);
   const a = document.getElementById('downloadLink');
   a.href = url;
@@ -62,7 +52,7 @@ async function saveBlob(blob) {
   setTimeout(() => {
     URL.revokeObjectURL(url);
     a.hidden = true;
-  }, 1000);
+  }, 100);
 }
 
 async function onCaptureClick() {
@@ -143,12 +133,12 @@ let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  document.getElementById('installBtn').hidden = false;
 });
 
 window.addEventListener('appinstalled', () => {
   deferredPrompt = null;
-  document.getElementById('installBtn').hidden = true;
+  const btn = document.getElementById('installBtn');
+  if (btn) btn.style.display = 'none';
 });
 
 window.addEventListener('load', async () => {
@@ -161,6 +151,13 @@ window.addEventListener('load', async () => {
       const { outcome } = await deferredPrompt.userChoice;
       console.log(`User ${outcome} the install prompt`);
       deferredPrompt = null;
+    } else {
+      // On iOS or if already installed, show instructions
+      if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+        alert('Tap the Share button (square with arrow) and select "Add to Home Screen"');
+      } else {
+        alert('Open browser menu and look for "Install app" or "Add to Home Screen"');
+      }
     }
   });
   setupRefImage();
