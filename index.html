@@ -19,6 +19,11 @@
       <!-- Reference image: visible in viewfinder, NOT saved -->
       <img id="refImg" class="ref-overlay" hidden />
       <canvas id="canvas" hidden></canvas>
+      <!-- add a countdown display — behind the flip button (z-index order) -->
+      <div id="countdownOverlay" class="countdown-overlay" hidden>
+        <span id="countdownNumber" class="countdown-number"></span>
+      </div>
+
       <div class="overlay">
         <button id="switchBtn" class="btn-icon">Flip</button>
 
@@ -30,6 +35,17 @@
         <button id="captureBtn" class="btn-capture">Take photo</button>
         <button id="saveBtn" class="btn-secondary">Re-save</button>
         <a id="downloadLink" hidden>Download</a>
+      </div>
+
+      <!-- Timer selector for the countdown -->
+      <div class="timer-row">
+        <span class="timer-label">⏱ Timer</span>
+        <div class="timer-options">
+          <button class="btn-timer active" data-seconds="0">Off</button>
+          <button class="btn-timer" data-seconds="3">3s</button>
+          <button class="btn-timer" data-seconds="5">5s</button>
+          <button class="btn-timer" data-seconds="10">10s</button>
+        </div>
       </div>
 
       <div class="ref-controls" id="refControls">

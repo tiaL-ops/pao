@@ -244,3 +244,124 @@ video {
     width: 500px;
   }
 }
+/* ── Timer Selector Row ───────────────────────────────────── */
+.timer-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 340px;
+  align-self: center;
+  background: var(--surface-2);
+  padding: 10px 16px;
+  border-radius: 16px;
+  border: 2px solid #fff;
+}
+
+.timer-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.timer-options {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.btn-timer {
+  background: var(--surface);
+  color: var(--brown-dark);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 6px 13px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition: background .15s, border-color .15s, transform .12s;
+}
+.btn-timer:hover {
+  background: var(--pink-light);
+  border-color: var(--pink);
+  transform: scale(1.06);
+}
+.btn-timer.active {
+  background: var(--pink);
+  color: #fff;
+  border-color: var(--pink);
+  box-shadow: 0 3px 10px rgba(232,145,138,.45);
+}
+
+/* ── Countdown Overlay ────────────────────────────────────── */
+/* NO backdrop-filter/blur — keeps the camera feed sharp */
+.countdown-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* semi-transparent tint only, zero blur */
+  background: rgba(92, 61, 46, 0.18);
+  border-radius: calc(var(--radius-card) - 3px);
+  z-index: 5;          /* below .overlay (z-index auto / stacking order) */
+  pointer-events: none; /* clicks pass through to buttons beneath */
+}
+
+.countdown-number {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: clamp(80px, 22vw, 140px);
+  color: #fff;
+  text-shadow:
+    0 0 40px rgba(232,145,138,.9),
+    0 4px 20px rgba(92,61,46,.4);
+}
+
+/* Each tick: number pops in then shrinks out */
+@keyframes pop {
+  0%   { transform: scale(1.5); opacity: 0; }
+  25%  { transform: scale(1);   opacity: 1; }
+  80%  { transform: scale(1);   opacity: 1; }
+  100% { transform: scale(0.7); opacity: 0; }
+}
+.countdown-number.tick {
+  animation: pop 0.95s ease forwards;
+}
+
+/* Gentle pink pulse on the viewport border while counting */
+.viewport.counting {
+  animation: pulse-border 1s ease-in-out infinite;
+}
+@keyframes pulse-border {
+  0%, 100% { box-shadow: var(--shadow); }
+  50%       { box-shadow: var(--shadow), 0 0 0 5px rgba(232,145,138,.3); }
+}
+
+/* White flash on capture */
+.viewport.flash::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  border-radius: calc(var(--radius-card) - 3px);
+  opacity: 0;
+  animation: shutter-flash .35s ease forwards;
+  pointer-events: none;
+  z-index: 20;
+}
+@keyframes shutter-flash {
+  0%   { opacity: .8; }
+  100% { opacity: 0;  }
+}
+
+/* Capture button disabled state during countdown */
+.btn-capture:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none;
+}

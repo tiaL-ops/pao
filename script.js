@@ -3,6 +3,55 @@ let canvas = null;
 let stream = null;
 let facingMode = 'environment';
 let refObjectUrl = null; // held separately so it's NEVER drawn to canvas
+let timerSeconds = 0;
+let countdownActive = false;
+
+function setupTimer() {
+  document.querySelectorAll('.btn-timer').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.btn-timer').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      timerSeconds = parseInt(btn.dataset.seconds, 10);
+    });
+  });
+}
+
+function runCountdown(seconds) {
+  return new Promise((resolve) => {
+    const overlay    = document.getElementById('countdownOverlay');
+    const numEl      = document.getElementById('countdownNumber');
+    const viewport   = document.querySelector('.viewport');
+    const captureBtn = document.getElementById('captureBtn');
+
+    countdownActive = true;
+    captureBtn.disabled = true;
+    overlay.hidden = false;
+    viewport.classList.add('counting');
+    let remaining = seconds;
+
+    function tick() {
+      // restart animation cleanly every each second
+      numEl.classList.remove('tick');
+      void numEl.offsetWidth; // forcing reflow
+      numEl.textContent = remaining;
+      numEl.classList.add('tick');
+
+      if (remaining === 0) {
+        setTimeout(() => {
+          overlay.hidden = true;
+          viewport.classList.remove('counting');
+          countdownActive = false;
+          captureBtn.disabled = false;
+          resolve();
+        }, 380);
+        return;
+      }
+      remaining--;
+      setTimeout(tick, 1000);
+    }
+    tick();
+  });
+}
 
 async function startCamera() {
   video = document.getElementById('video');
@@ -66,6 +115,19 @@ async function saveBlob(blob) {
 }
 
 async function onCaptureClick() {
+  if (countdownActive) return;
+
+  if (timerSeconds > 0) {
+    await runCountdown(timerSeconds);
+  }
+
+  // Shutter flash
+  const viewport = document.querySelector('.viewport');
+  viewport.classList.remove('flash');
+  void viewport.offsetWidth;
+  viewport.classList.add('flash');
+  setTimeout(() => viewport.classList.remove('flash'), 400);
+
   const blob = await takePhoto();
   // auto-save immediately
   await saveBlob(blob);
@@ -143,6 +205,7 @@ window.addEventListener('load', async () => {
   document.getElementById('saveBtn').addEventListener('click', onSaveClick);
   document.getElementById('switchBtn').addEventListener('click', onSwitchClick);
   setupRefImage();
+  setupTimer();
   await startCamera();
   registerSW();
 });
