@@ -365,3 +365,30 @@ video {
   transform: none !important;
   box-shadow: none;
 }
+
+/* toast notification */
+.pao-toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--surface);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: var(--radius-btn);
+  border: 2px solid var(--pink-light);
+  box-shadow: 0 8px 28px rgba(120,80,50,.18);
+  opacity: 0;
+  transition: opacity .25s ease, transform .25s ease;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 999;
+}
+
+.pao-toast--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
