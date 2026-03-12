@@ -22,17 +22,32 @@ function runCountdown(seconds) {
     const numEl      = document.getElementById('countdownNumber');
     const viewport   = document.querySelector('.viewport');
     const captureBtn = document.getElementById('captureBtn');
+    const cancelBtn  = document.getElementById('cancelCountdownBtn');
 
     countdownActive = true;
     captureBtn.disabled = true;
     overlay.hidden = false;
     viewport.classList.add('counting');
+
     let remaining = seconds;
+    let timeoutId = null; // We keep the timeout ID so that we can cancel it.
+    // Clears everything and stops the countdown
+    // completed = true if completed normally, false if cancelled
+    function stopCountdown(completed) {
+      if (timeoutId) clearTimeout(timeoutId);
+      overlay.hidden = true;
+      viewport.classList.remove('counting');
+      countdownActive = false;
+      captureBtn.disabled = false;
+      resolve(completed);
+    }
+    // Click on the ✕ button → cancels the countdown
+    cancelBtn.addEventListener('click', () => stopCountdown(false), { once: true });
 
     function tick() {
-      // restart animation cleanly every each second
+      // Restart animation cleanly each second
       numEl.classList.remove('tick');
-      void numEl.offsetWidth; // forcing reflow
+      void numEl.offsetWidth; // force reflow
       numEl.textContent = remaining;
       numEl.classList.add('tick');
 
@@ -51,6 +66,30 @@ function runCountdown(seconds) {
     }
     tick();
   });
+}
+
+
+function showToast(message, duration = 2500) {
+  // Remove any existing toast first
+  const existing = document.getElementById('pao-toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'pao-toast';
+  toast.className = 'pao-toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  // Trigger entrance animation
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => toast.classList.add('pao-toast--visible'));
+  });
+
+  // Auto-dismiss
+  setTimeout(() => {
+    toast.classList.remove('pao-toast--visible');
+    toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+  }, duration);
 }
 
 async function startCamera() {
@@ -118,7 +157,8 @@ async function onCaptureClick() {
   if (countdownActive) return;
 
   if (timerSeconds > 0) {
-    await runCountdown(timerSeconds);
+    const completed = await runCountdown(timerSeconds);
+    if (!completed) return; // count cancelled, no photo taken
   }
 
   // Shutter flash
@@ -150,7 +190,8 @@ async function onCaptureClick() {
 async function onSaveClick() {
   const blob = window._lastCapture;
   if (!blob) {
-    alert('Take a picture first');
+    // now we use toast instead of the alert
+    showToast('Please, Take a photo first!');
     return;
   }
   await saveBlob(blob);
@@ -208,6 +249,14 @@ window.addEventListener('load', async () => {
   setupTimer();
   await startCamera();
   registerSW();
+
+  // Space bar on desktop = take photo (same as clicking the button)
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && !e.repeat) {
+      e.preventDefault(); // prevents the page from scrolling
+      onCaptureClick();
+    }
+  });
 });
 
 window.addEventListener('beforeunload', () => stopCamera());
