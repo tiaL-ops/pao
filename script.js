@@ -27,12 +27,13 @@ function runCountdown(seconds) {
     captureBtn.disabled = true;
     overlay.hidden = false;
     viewport.classList.add('counting');
+
     let remaining = seconds;
 
     function tick() {
-      // restart animation cleanly every each second
+      // Restart animation cleanly each second
       numEl.classList.remove('tick');
-      void numEl.offsetWidth; // forcing reflow
+      void numEl.offsetWidth; // force reflow
       numEl.textContent = remaining;
       numEl.classList.add('tick');
 
@@ -51,6 +52,30 @@ function runCountdown(seconds) {
     }
     tick();
   });
+}
+
+
+function showToast(message, duration = 2500) {
+  // Remove any existing toast first
+  const existing = document.getElementById('pao-toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'pao-toast';
+  toast.className = 'pao-toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  // Trigger entrance animation
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => toast.classList.add('pao-toast--visible'));
+  });
+
+  // Auto-dismiss
+  setTimeout(() => {
+    toast.classList.remove('pao-toast--visible');
+    toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+  }, duration);
 }
 
 async function startCamera() {
@@ -150,7 +175,8 @@ async function onCaptureClick() {
 async function onSaveClick() {
   const blob = window._lastCapture;
   if (!blob) {
-    alert('Take a picture first');
+    // now we use toast instead of the alert
+    showToast('Please, Take a photo first!');
     return;
   }
   await saveBlob(blob);
