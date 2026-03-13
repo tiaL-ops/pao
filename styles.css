@@ -20,6 +20,8 @@
 
 /* ── Reset & Base ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* prevents display:flex/grid from overriding the hidden attribute */
+[hidden] { display: none !important; }
 
 html, body {
   height: 100%;
@@ -320,6 +322,33 @@ video {
     0 0 40px rgba(232,145,138,.9),
     0 4px 20px rgba(92,61,46,.4);
 }
+
+/* ✕ button to cancel the countdown */
+.btn-cancel-countdown {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: rgba(253,246,238,.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 2px solid #fff;
+  color: var(--brown-dark);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform .15s ease, background .15s ease;
+  pointer-events: auto; /* The rest of the overlay has pointer-events: none */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-cancel-countdown:hover  { transform: scale(1.1); background: var(--pink-light); }
+.btn-cancel-countdown:active { transform: scale(.95); }
 
 /* Each tick: number pops in then shrinks out */
 @keyframes pop {

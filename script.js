@@ -22,6 +22,7 @@ function runCountdown(seconds) {
     const numEl      = document.getElementById('countdownNumber');
     const viewport   = document.querySelector('.viewport');
     const captureBtn = document.getElementById('captureBtn');
+    const cancelBtn  = document.getElementById('cancelCountdownBtn');
 
     countdownActive = true;
     captureBtn.disabled = true;
@@ -29,6 +30,19 @@ function runCountdown(seconds) {
     viewport.classList.add('counting');
 
     let remaining = seconds;
+    let timeoutId = null; // We keep the timeout ID so that we can cancel it.
+    // Clears everything and stops the countdown
+    // completed = true if completed normally, false if cancelled
+    function stopCountdown(completed) {
+      if (timeoutId) clearTimeout(timeoutId);
+      overlay.hidden = true;
+      viewport.classList.remove('counting');
+      countdownActive = false;
+      captureBtn.disabled = false;
+      resolve(completed);
+    }
+    // Click on the ✕ button → cancels the countdown
+    cancelBtn.addEventListener('click', () => stopCountdown(false), { once: true });
 
     function tick() {
       // Restart animation cleanly each second
@@ -143,7 +157,8 @@ async function onCaptureClick() {
   if (countdownActive) return;
 
   if (timerSeconds > 0) {
-    await runCountdown(timerSeconds);
+    const completed = await runCountdown(timerSeconds);
+    if (!completed) return; // count cancelled, no photo taken
   }
 
   // Shutter flash
@@ -234,6 +249,14 @@ window.addEventListener('load', async () => {
   setupTimer();
   await startCamera();
   registerSW();
+
+  // Space bar on desktop = take photo (same as clicking the button)
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && !e.repeat) {
+      e.preventDefault(); // prevents the page from scrolling
+      onCaptureClick();
+    }
+  });
 });
 
 window.addEventListener('beforeunload', () => stopCamera());
