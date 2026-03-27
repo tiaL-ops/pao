@@ -215,6 +215,8 @@ function setupRefImage() {
   const opacityRow   = document.getElementById('opacityRow');
   const opacitySlider = document.getElementById('opacitySlider');
   const clearRefBtn  = document.getElementById('clearRef');
+  const flipRefBtn    = document.getElementById('flipRef');
+  let refFlipped = false; // tracks the state of flip 
 
   refUpload.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -233,9 +235,19 @@ function setupRefImage() {
     refImg.style.opacity = opacitySlider.value / 100;
   });
 
+  // toggle horizontal mirror on the reference image overlay
+  flipRefBtn.addEventListener('click', () => {
+    refFlipped = !refFlipped;
+    refImg.style.transform = refFlipped ? 'scaleX(-1)' : '';
+    flipRefBtn.classList.toggle('active', refFlipped); // feedback visual
+  });
+
   clearRefBtn.addEventListener('click', () => {
     refImg.hidden = true;
     refImg.src = '';
+    refImg.style.transform = ''; // reset flip on clear
+    refFlipped = false;// reset flip state
+    flipRefBtn.classList.remove('active'); // and reset button style
     opacityRow.hidden = true;
     if (refObjectUrl) { URL.revokeObjectURL(refObjectUrl); refObjectUrl = null; }
   });

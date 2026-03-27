@@ -231,13 +231,20 @@ video {
   color: var(--brown);
   font-family: 'Nunito', sans-serif;
   font-weight: 700;
-  font-size: 12px;
-  padding: 6px 12px;
+  font-size: 11px;
+  padding: 6px 10px;
   border-radius: var(--radius-btn);
   cursor: pointer;
   transition: background .15s, color .15s;
 }
 .btn-ghost:hover { background: var(--brown); color: #fff; }
+
+/* Active state that keeps the button visually "pressed" when flip is on */
+.btn-ghost.active {
+  background: var(--brown);
+  color: #fff;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, .15);
+}
 
 /* ── Desktop tweak ────────────────────────────────────────── */
 @media (min-width: 700px) {
